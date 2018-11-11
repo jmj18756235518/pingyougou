@@ -90,3 +90,7 @@
 0:0:0:0:0:0:0:1 - - [11/Nov/2018:22:34:07 +0800] "GET /brand/findPage.do?currentPage=1&rows=10 HTTP/1.1" 200 425 http-bio-9101-exec-5 7
 0:0:0:0:0:0:0:1 - - [11/Nov/2018:22:34:09 +0800] "GET /brand/findPage.do?currentPage=2&rows=10 HTTP/1.1" 200 444 http-bio-9101-exec-5 10
 0:0:0:0:0:0:0:1 - - [11/Nov/2018:22:34:10 +0800] "GET /brand/findPage.do?currentPage=3&rows=10 HTTP/1.1" 200 101 http-bio-9101-exec-5 6
+0:0:0:0:0:0:0:1 - - [11/Nov/2018:22:41:52 +0800] "GET /brand/findPage?currentPage=1&rows=10 HTTP/1.1" 404 979 http-bio-9101-exec-8 11
+0:0:0:0:0:0:0:1 - - [11/Nov/2018:22:42:12 +0800] "GET /brand/findPage HTTP/1.1" 404 979 http-bio-9101-exec-9 0
+0:0:0:0:0:0:0:1 - - [11/Nov/2018:22:42:29 +0800] "GET /brand/findAll.do HTTP/1.1" 200 908 http-bio-9101-exec-9 13
+0:0:0:0:0:0:0:1 - - [11/Nov/2018:22:42:37 +0800] "GET /brand//findPage.do?currentPage=1&rows=10 HTTP/1.1" 200 425 http-bio-9101-exec-9 10

@@ -14,7 +14,6 @@ public class PageResult implements Serializable{
 	private List list;  //当前页面显示的结果
 	
 	
-	
 	@Override
 	public String toString() {
 		return "PageResult [total=" + total + ", list=" + list + "]";

@@ -30,17 +30,20 @@ public class BrandServiceImpl implements BrandService {
 	}
 
 	/***
-	 * 分页显示品牌列表
-	 * currentPage 当前页码
+	 * 分页展示品牌列表
+	 * currentPage 当前页
 	 * rows 每页显示的条数
 	 */
 	@Override
 	public PageResult findPage(int currentPage, int rows) {
+		//根据这两个从页面获得的参数使用PageHapler进行分页处理
 		PageHelper.startPage(currentPage,rows);
 		Page<TbBrand> page = (Page<TbBrand>) tbBrandMapper.selectByExample(null);
-		System.out.println("serviceImpl总页数:"+page.getTotal());    //获得总页数
-		System.out.println("serviceImpl记录:"+page.getResult());   //获得当前页面所需要显示的记录数
-		return new PageResult(page.getTotal(),page.getResult());
+		long total = page.getTotal();   //获得总页数
+		List<TbBrand> list = page.getResult();   //获得的当前页面显示的集合
+	
+		return new PageResult(total,list);
 	}
+
 
 }
