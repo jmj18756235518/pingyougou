@@ -9,22 +9,37 @@ import com.alibaba.dubbo.config.annotation.Reference;
 import com.pinyougou.pojo.TbBrand;
 import com.pinyougou.sellergoods.service.BrandService;
 
+import entity.PageResult;
+
 @RestController
 @RequestMapping("/brand")
 public class BrandController {
 	
-	//远程调用interface
+	//远程依赖service
 	@Reference
 	BrandService brandService;
 	
 	/***
-	 * 查询所有的品牌
+	 * 展示所有的品牌
 	 * @return
 	 */
 	@RequestMapping("/findAll")
 	public List<TbBrand> findAll(){
 		
 		return brandService.findAll();
+	}
+	
+	/***
+	 * 分页显示品牌列表
+	 * 使用mybatis中的分页插件PageHelper
+	 * @return
+	 */
+	@RequestMapping("/findPage")
+	public PageResult findPage(int currentPage,int rows) {
+		
+		PageResult pageResult = brandService.findPage(currentPage, rows);
+		System.out.println("controller :  "+pageResult);
+		return pageResult;
 	}
 
 }
