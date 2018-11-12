@@ -16,8 +16,14 @@ public class TbBrand implements Serializable{
     public void setId(Long id) {
         this.id = id;
     }
+    
 
-    public String getName() {
+    @Override
+	public String toString() {
+		return "TbBrand [id=" + id + ", name=" + name + ", firstChar=" + firstChar + "]";
+	}
+
+	public String getName() {
         return name;
     }
 

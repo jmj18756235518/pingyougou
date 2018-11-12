@@ -29,7 +29,7 @@
 				$http.get("../brand/findAll.do").success(function(response){
 					$scope.list = response;
 				})
-			}
+			};
 			//分页控件配置
 			$scope.paginationConf = {
 					currentPage:1,
@@ -39,20 +39,92 @@
 					onChange:function(){
 						$scope.reloadList();
 					}
-			}
+			};
 			//刷新列表
 			$scope.reloadList = function(){
-				$scope.findPage( $scope.paginationConf.currentPage,
-						$scope.paginationConf.itemsPerPage);
-			}
+				/* $scope.findPage( $scope.paginationConf.currentPage,
+						$scope.paginationConf.itemsPerPage); */
+				$scope.search( $scope.paginationConf.currentPage,
+						$scope.paginationConf.itemsPerPage); 
+			};
 			//分页显示
 			$scope.findPage=function(currentPage,rows){
 				$http.get("../brand/findPage.do?currentPage="+currentPage+"&rows="+rows).success(function(response){
 					$scope.list = response.list;   //当前页面应显示的集合
 					$scope.paginationConf.totalItems = response.total;    //总记录数
 				})
-			}
-		
+			};
+			
+			//添加商品 
+			$scope.addBrand=function(){
+				$http.post('../brand/addBrand.do',$scope.entity).success(function(response){
+					if(response.success){
+						$scope.reloadList();   //添加成功重新加载
+					}else{
+						alert(response.message);
+					}
+				})
+			};
+			//根据品牌的id查询
+			$scope.findById=function(id){
+				$http.get('../brand/findById.do?id='+id).success(function(response){
+					$scope.entity = response;
+				})
+			};
+			//修改商品
+			$scope.updateBrand=function(){
+				var methodName = "addBrand";   //定义请求的controller名称，在请求conroller的时候使用
+				if($scope.entity.id != null){  
+					methodName = "updateBrand";   //当Id不为空的时候更新brand
+				}
+				$http.post('../brand/'+methodName+'.do',$scope.entity).success(function(response){
+					if(response){
+						//重新加载
+						$scope.reloadList();
+					}else{
+						//提示错误信息
+						alert(response.message);
+					}
+				})		
+			};
+			//实时更新页面复选框选选中状态
+			$scope.selectIds=[];     //被选中的id集合
+			$scope.updateSelection=function($event,id){
+				if($event.target.checked){   //如果复选框被选中，那么就将传过来的id添加到数组中
+					$scope.selectIds.push(id);
+				}else{
+					var index = $scope.selectIds.indexOf(id);
+					$scope.selectIds.splice(index,1);    //从数组中移除
+				}	
+			};
+			//多选删除
+			$scope.delBrandBySel=function(){
+				if($scope.selectIds.length > 0 && $scope.selectIds != null){
+					if(confirm("您确定要删除么?")){
+						$http.get("../brand/delBrandBySel.do?ids="+$scope.selectIds).success(function(response){
+							if(response.success){   //删除成功
+								$scope.reloadList();    //重新加载
+							}else{
+								alert("删除失败！");
+							}
+						})
+					}
+				}else{
+					alert("您还尚未选择呢！")
+				}
+			};
+			//全选复选框
+			$scope.fullUpdateSel = function(){
+			};
+			//搜索功能
+			$scope.searchEntity={};//定义搜索对象
+			$scope.search=function(currentPage,rows){
+				$http.post('../brand/search.do?currentPage='+currentPage+'&rows='+rows,$scope.searchEntity).success(function(response){
+					//查询成功之后
+					$scope.list = response.list;    //返回的response就是封装的pageResult实体类
+					$scope.paginationConf.totalItems = response.total;
+				})
+			};
 	})
 </script>
 
@@ -77,10 +149,10 @@
 				<div class="form-group form-inline">
 					<div class="btn-group">
 						<button type="button" class="btn btn-default" title="新建"
-							data-toggle="modal" data-target="#editModal">
+							data-toggle="modal" data-target="#editModal" ng-click="entity={}">
 							<i class="fa fa-file-o"></i> 新建
 						</button>
-						<button type="button" class="btn btn-default" title="删除">
+						<button type="button" class="btn btn-default" title="删除" ng-click="delBrandBySel()">
 							<i class="fa fa-trash-o"></i> 删除
 						</button>
 						<button type="button" class="btn btn-default" title="刷新"
@@ -91,17 +163,21 @@
 				</div>
 			</div>
 			<div class="box-tools pull-right">
-				<div class="has-feedback"></div>
+				<div class="has-feedback">
+					品牌名称 :<input ng-model = "searchEntity.name" />
+					品牌首字母:<input ng-model = "searchEntity.firstChar" />
+					<button  class="btn btn-default" ng-click="reloadList()">点击搜索</button>
+				</div>
 			</div>
 			<!--工具栏/-->
-
+			{{selectIds}}
 			<!--数据列表-->
 			<table id="dataList"
 				class="table table-bordered table-striped table-hover dataTable">
 				<thead>
 					<tr>
 						<th class="" style="padding-right: 0px"><input id="selall"
-							type="checkbox" class="icheckbox_square-blue"></th>
+							type="checkbox" ng-click="fullUpdateSel()" class="icheckbox_square-blue"></th>
 						<th class="sorting_asc">品牌ID</th>
 						<th class="sorting">品牌名称</th>
 						<th class="sorting">品牌首字母</th>
@@ -110,13 +186,13 @@
 				</thead>
 				<tbody>
 					<tr ng-repeat="entity in list">
-						<td><input type="checkbox"></td>
+						<td><input ng-click="updateSelection($event,entity.id)" type="checkbox"></td>
 						<td>{{entity.id}}</td>
 						<td>{{entity.name}}</td>
 						<td>{{entity.firstChar}}</td>
 						<td class="text-center">
 							<button type="button" class="btn bg-olive btn-xs"
-								data-toggle="modal" data-target="#editModal">修改</button>
+								data-toggle="modal" ng-click="findById(entity.id)" data-target="#editModal">修改</button>
 						</td>
 					</tr>
 				</tbody>
@@ -149,18 +225,19 @@
 					<table class="table table-bordered table-striped" width="800px">
 						<tr>
 							<td>品牌名称</td>
-							<td><input class="form-control" placeholder="品牌名称">
+							<td><input class="form-control" ng-model="entity.name" placeholder="品牌名称">
 							</td>
 						</tr>
 						<tr>
 							<td>首字母</td>
-							<td><input class="form-control" placeholder="首字母"></td>
+							<td><input class="form-control" ng-model="entity.firstChar" placeholder="首字母"></td>
 						</tr>
+						{{entity}}
 					</table>
 				</div>
 				<div class="modal-footer">
 					<button class="btn btn-success" data-dismiss="modal"
-						aria-hidden="true">保存</button>
+						aria-hidden="true" ng-click="updateBrand()">保存</button>
 					<button class="btn btn-default" data-dismiss="modal"
 						aria-hidden="true">关闭</button>
 				</div>
