@@ -47,14 +47,15 @@
 				$scope.search( $scope.paginationConf.currentPage,
 						$scope.paginationConf.itemsPerPage); 
 			};
-			//分页显示
+		/* 	//分页显示
 			$scope.findPage=function(currentPage,rows){
 				$http.get("../brand/findPage.do?currentPage="+currentPage+"&rows="+rows).success(function(response){
 					$scope.list = response.list;   //当前页面应显示的集合
+
 					$scope.paginationConf.totalItems = response.total;    //总记录数
 				})
 			};
-			
+			 */
 			//添加商品 
 			$scope.addBrand=function(){
 				$http.post('../brand/addBrand.do',$scope.entity).success(function(response){
@@ -97,6 +98,18 @@
 					$scope.selectIds.splice(index,1);    //从数组中移除
 				}	
 			};
+			//全选复选框
+			$scope.fullUpdateSel = function($event){
+				if($event.target.checked){ //如果点击了此复选框，就相当于一个全选或者全不选的开关
+					alert($scope.list.id)
+					angular.forEach($scope.list,function(id,index){
+						
+						$selectIds[index] = id;
+					})
+				}else{
+					$selectIds=[];
+				}
+			};
 			//多选删除
 			$scope.delBrandBySel=function(){
 				if($scope.selectIds.length > 0 && $scope.selectIds != null){
@@ -113,17 +126,18 @@
 					alert("您还尚未选择呢！")
 				}
 			};
-			//全选复选框
-			$scope.fullUpdateSel = function(){
-			};
-			//搜索功能
+			
+			//搜索功能 + 分页显示  与前面的分页显示合并
+			$scope.searchEntity={};//定义搜索对象
 			$scope.search=function(currentPage,rows){
 				$http.post('../brand/search.do?currentPage='+currentPage+'&rows='+rows,$scope.searchEntity).success(function(response){
 					//查询成功之后
 					$scope.list = response.list;    //返回的response就是封装的pageResult实体类
+					alert($scope.list);
+					alert(response.list);
 					$scope.paginationConf.totalItems = response.total;
 				})
-			}
+			};
 	})
 </script>
 
@@ -176,7 +190,7 @@
 				<thead>
 					<tr>
 						<th class="" style="padding-right: 0px"><input id="selall"
-							type="checkbox" ng-click="fullUpdateSel()" class="icheckbox_square-blue"></th>
+							type="checkbox"   ng-click="fullUpdateSel($event)" class="icheckbox_square-blue"></th>
 						<th class="sorting_asc">品牌ID</th>
 						<th class="sorting">品牌名称</th>
 						<th class="sorting">品牌首字母</th>
